@@ -1,0 +1,82 @@
+apiVersion: data.packaging.carvel.dev/v1alpha1
+kind: Package
+metadata:
+  name: ootb-supply-chain-testing-with-cache.pkg.maki.lol.0.0.1
+spec:
+  refName: ootb-supply-chain-testing-with-cache.pkg.maki.lol
+  version: 0.0.1
+  valuesSchema:
+    openAPIv3:
+      type: object
+      additionalProperties: false
+      properties:
+        registry:
+          type: object
+          additionalProperties: false
+          properties:
+            server:
+              type: string
+              description: Name of the registry server where application images should be pushed to (required).
+              default: index.docker.io
+            repository:
+              type: string
+              description: Name of the repository in the image registry server where the application images from the workloads should be pushed to (required).
+              default: ""
+        gitops:
+          type: object
+          additionalProperties: false
+          properties:
+            repository_prefix:
+              type: string
+              description: Default prefix to be used for forming Git SSH URLs for pushing Kubernetes configuration produced by the supply chain.
+              default: ""
+            branch:
+              type: string
+              description: Default branch to use for pushing Kubernetes configuration files produced by the supply chain.
+              default: main
+            user_name:
+              type: string
+              description: Default user name to be used for the commits produced by the supply chain.
+              default: supplychain
+            user_email:
+              type: string
+              description: Default user email to be used for the commits produced by the supply chain.
+              default: supplychain@cluster.local
+            commit_message:
+              type: string
+              description: Default git commit message to write when publishing Kubernetes configuration files produces by the supply chain to git.
+              default: bump configuration
+            ssh_secret:
+              type: string
+              description: Name of the default Secret containing SSH credentials to lookup in the developer namespace for the supply chain to fetch source code from and push configuration to.
+              default: git-ssh
+        cluster_builder:
+          type: string
+          description: Name of the Tanzu Build Service (TBS) ClusterBuilder to use by default on image objects managed by the supply chain.
+          default: default
+        service_account:
+          type: string
+          description: Name of the service account in the namespace where the Workload is submitted to utilize for providing registry credentials to Tanzu Build Service (TBS) Image objects as well as deploying the application.
+          default: default
+        git_implementation:
+          type: string
+          default: go-git
+  template:
+    spec:
+      fetch:
+      - imgpkgBundle:
+          image: ghcr.io/making/ootb-supply-chain-testing-with-cache-bundle:0.0.1
+      template:
+      - ytt: {}
+      - kbld:
+          paths:
+          - '-'
+          - .imgpkg/images.yml
+      deploy:
+      - kapp:
+          rawOptions:
+          - --wait-timeout=5m
+          - --diff-changes=true
+          inspect:
+            rawOptions:
+            - --tree=true

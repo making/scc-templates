@@ -1,0 +1,12 @@
+apiVersion: data.packaging.carvel.dev/v1alpha1
+kind: PackageMetadata
+metadata:
+  name: scc-templates.pkg.maki.lol
+spec:
+  displayName: Out of The Box Templates for Tanzu Application Platform
+  shortDescription: Out of The Box Templates.
+  longDescription: Out of The Box Templates for Tanzu Application Platform to be used with Supply Chains.
+  providerName: "@making"
+  supportDescription: https://github.com/making/supply-chain-choreographer
+  maintainers:
+  - name: Toshiaki Maki

@@ -1,0 +1,27 @@
+#@data/values-schema
+---
+registry:
+  #@schema/desc "Name of the registry server where application images should be pushed to (required)."
+  server: index.docker.io
+  #@schema/desc "Name of the repository in the image registry server where the application images from the workloads should be pushed to (required)."
+  repository: ""
+
+gitops:
+  #@schema/desc "Default prefix to be used for forming Git SSH URLs for pushing Kubernetes configuration produced by the supply chain."
+  repository_prefix: ""
+  #@schema/desc "Default branch to use for pushing Kubernetes configuration files produced by the supply chain."
+  branch: main
+  #@schema/desc "Default user name to be used for the commits produced by the supply chain."
+  user_name: supplychain
+  #@schema/desc "Default user email to be used for the commits produced by the supply chain."
+  user_email: supplychain@cluster.local
+  #@schema/desc "Default git commit message to write when publishing Kubernetes configuration files produces by the supply chain to git."
+  commit_message: bump configuration
+  #@schema/desc "Name of the default Secret containing SSH credentials to lookup in the developer namespace for the supply chain to fetch source code from and push configuration to."
+  ssh_secret: git-ssh
+
+#@schema/desc "Name of the Tanzu Build Service (TBS) ClusterBuilder to use by default on image objects managed by the supply chain."
+cluster_builder: default
+#@schema/desc "Name of the service account in the namespace where the Workload is submitted to utilize for providing registry credentials to Tanzu Build Service (TBS) Image objects as well as deploying the application."
+service_account: default
+git_implementation: go-git

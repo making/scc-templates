@@ -1,0 +1,46 @@
+#@ load("@ytt:data", "data")
+apiVersion: carto.run/v1alpha1
+kind: ClusterTemplate
+metadata:
+  name: tekton-pipeline-cache-template
+spec:
+  template:
+    apiVersion: kappctrl.k14s.io/v1alpha1
+    kind: App
+    metadata:
+      name: $(workload.metadata.name)$-pipeline-cache
+    spec:
+      serviceAccountName: #@ data.values.service_account
+      syncPeriod: 24h
+      fetch:
+      - inline:
+          paths:
+            #@yaml/text-templated-strings
+            pvc.yml: |
+              ---
+              apiVersion: v1
+              kind: PersistentVolumeClaim
+              metadata:
+                name: $(workload.metadata.name)$-pipeline-cache
+              spec:
+                accessModes:
+                - ReadWriteOnce
+                resources:
+                  requests:
+                    storage: (@= data.values.cache_size @)
+                (@ if data.values.storage_class_name: -@)
+                storageClassName: (@= data.values.storage_class_name @)
+                (@- end @)
+      template:
+      - ytt: { }
+      deploy:
+      - kapp:
+          rawOptions:
+          - --wait-timeout=5m
+          - --diff-changes=true
+          delete:
+            rawOptions:
+            - --apply-ignored=true
+          inspect:
+            rawOptions:
+            - --tree=true

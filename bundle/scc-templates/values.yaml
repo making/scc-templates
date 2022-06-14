@@ -1,0 +1,10 @@
+#@data/values-schema
+---
+#@schema/desc "List of templates to exclude from the installation (e.g. ['git-writer'])"
+excluded_templates: [ "" ]
+#@schema/desc "Storage class name of the cache"
+storage_class_name: ""
+#@schema/desc "Storage size for the cache"
+cache_size: 2Gi
+#@schema/desc "Name of the service account that creates persistent volume claims for the cache via App CR."
+service_account: default

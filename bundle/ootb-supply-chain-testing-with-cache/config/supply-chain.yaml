@@ -1,0 +1,117 @@
+#@ load("@ytt:data", "data")
+#@ load("@ytt:assert", "assert")
+
+#@ data.values.registry.server or assert.fail("missing registry.server")
+#@ data.values.registry.repository or assert.fail("missing registry.repository")
+
+---
+apiVersion: carto.run/v1alpha1
+kind: ClusterSupplyChain
+metadata:
+  name: source-test-with-cache-to-url
+spec:
+  selector:
+    apps.tanzu.vmware.com/workload-type: web
+    apps.tanzu.vmware.com/has-tests: "true"
+    apps.jaguchi.maki.lol/has-cache: "true"
+
+  params:
+  - name: gitops_branch
+    default: #@ data.values.gitops.branch
+  - name: gitops_user_name
+    default: #@ data.values.gitops.user_name
+  - name: gitops_user_email
+    default: #@ data.values.gitops.user_email
+  - name: gitops_commit_message
+    default: #@ data.values.gitops.commit_message
+  - name: gitops_ssh_secret
+    default: #@ data.values.gitops.ssh_secret
+  #@ if/end data.values.gitops.repository_prefix:
+  - name: gitops_repository_prefix
+    default: #@ data.values.gitops.repository_prefix
+
+  resources:
+  - name: source-provider
+    templateRef:
+      kind: ClusterSourceTemplate
+      name: source-template
+    params:
+    - name: serviceAccount
+      value: #@ data.values.service_account
+    - name: gitImplementation
+      value: #@ data.values.git_implementation
+
+  - name: deliverable
+    templateRef:
+      kind: ClusterTemplate
+      name: deliverable-template
+    params:
+    - name: registry
+      value:
+        server: #@ data.values.registry.server
+        repository: #@ data.values.registry.repository
+
+  - name: pipeline-cache
+    templateRef:
+      kind: ClusterTemplate
+      name: tekton-pipeline-cache-template
+    params: [ ]
+
+  - name: source-tester
+    templateRef:
+      kind: ClusterSourceTemplate
+      name: testing-pipeline-with-cache
+    sources:
+    - resource: source-provider
+      name: source
+
+  - name: image-builder
+    templateRef:
+      kind: ClusterImageTemplate
+      name: kpack-template
+    params:
+    - name: serviceAccount
+      value: #@ data.values.service_account
+    - name: clusterBuilder
+      value: #@ data.values.cluster_builder
+    - name: registry
+      value:
+        server: #@ data.values.registry.server
+        repository: #@ data.values.registry.repository
+    sources:
+    - resource: source-tester
+      name: source
+
+  - name: config-provider
+    templateRef:
+      kind: ClusterConfigTemplate
+      name: convention-template
+    params:
+    - name: serviceAccount
+      value: #@ data.values.service_account
+    images:
+    - resource: image-builder
+      name: image
+
+  - name: app-config
+    templateRef:
+      kind: ClusterConfigTemplate
+      name: config-template
+    configs:
+    - resource: config-provider
+      name: config
+
+  - name: config-writer
+    templateRef:
+      kind: ClusterTemplate
+      name: config-writer-template
+    params:
+    - name: serviceAccount
+      value: #@ data.values.service_account
+    - name: registry
+      value:
+        server: #@ data.values.registry.server
+        repository: #@ data.values.registry.repository
+    configs:
+    - resource: app-config
+      name: config

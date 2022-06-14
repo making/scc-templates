@@ -1,0 +1,18 @@
+---
+apiVersion: imgpkg.carvel.dev/v1alpha1
+images:
+- annotations:
+    kbld.carvel.dev/id: ghcr.io/making/ootb-supply-chain-testing-with-cache-bundle:0.0.1
+    kbld.carvel.dev/origins: |
+      - resolved:
+          tag: 0.0.1
+          url: ghcr.io/making/ootb-supply-chain-testing-with-cache-bundle:0.0.1
+  image: ghcr.io/making/ootb-supply-chain-testing-with-cache-bundle@sha256:707f919fbbbda0a4744f48c0ae07173cb4b1e110cd3fc312a82d7a039c49634c
+- annotations:
+    kbld.carvel.dev/id: ghcr.io/making/scc-templates-bundle:0.0.1
+    kbld.carvel.dev/origins: |
+      - resolved:
+          tag: 0.0.1
+          url: ghcr.io/making/scc-templates-bundle:0.0.1
+  image: ghcr.io/making/scc-templates-bundle@sha256:f5d58f1f57878049a6db71784e651e6718c8c3af10d731627f030b0838677fe3
+kind: ImagesLock

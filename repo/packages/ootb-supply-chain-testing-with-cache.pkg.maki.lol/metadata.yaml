@@ -1,0 +1,14 @@
+apiVersion: data.packaging.carvel.dev/v1alpha1
+kind: PackageMetadata
+metadata:
+  name: ootb-supply-chain-testing-with-cache.pkg.maki.lol
+spec:
+  displayName: Out of The Box Supply Chain with Testing and Cache for Tanzu Application Platform
+  shortDescription: Out of The Box Supply Chain with Testing and Cache.
+  longDescription: |-
+    Out of The Box Supply Chain with Testing and Cache for Tanzu Application Platform powers workloads that
+    require running tests.
+  providerName: "@making"
+  supportDescription: https://github.com/making/supply-chain-choreographer
+  maintainers:
+  - name: Toshiaki Maki
