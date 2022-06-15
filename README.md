@@ -73,6 +73,15 @@ clusterruntemplate.carto.run/tekton-source-pipelinerun-with-cache   35m <<--- ðŸ
 clusterruntemplate.carto.run/tekton-taskrun                         34d
 ```
 
+```
+$ tanzu apps cluster-supply-chain list
+
+NAME                            READY   AGE   LABEL SELECTOR
+basic-image-to-url              Ready   34d   apps.tanzu.vmware.com/workload-type=web
+source-test-with-cache-to-url   Ready   35m   apps.jaguchi.maki.lol/has-cache=true,apps.tanzu.vmware.com/has-tests=true,apps.tanzu.vmware.com/workload-type=web <<--- ðŸ†•
+source-to-url                   Ready   34d   apps.tanzu.vmware.com/workload-type=web
+```
+
 ## Out of The Box Supply Chain with Testing and Cache
 
 For example, create the following pipeline that uses maven as a build tool and caches the dependencies
